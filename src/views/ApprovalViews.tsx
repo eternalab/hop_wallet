@@ -188,20 +188,25 @@ export const SignTransactionRequestView: React.FC<ApprovalViewRequestProps> = ({
                     options: signRequest.options
                 }
             });
-
-            const resp: MessageResponse = await chrome.runtime.sendMessage({
-                type: MessageType.NotifyConfirmOrSignResult,
-                data: {
-                    requestId: psocr.requestId,
-                    resp: signResp.success ? signResp.data : null,
-                    error: signResp.success ? null : signResp.error,
+            if (signResp.success){
+                const resp: MessageResponse = await chrome.runtime.sendMessage({
+                    type: MessageType.NotifyConfirmOrSignResult,
+                    data: {
+                        requestId: psocr.requestId,
+                        resp: signResp.success ? signResp.data : null,
+                        error: signResp.success ? null : signResp.error,
+                    }
+                });
+                if (!resp || !resp.success) {
+                    showToast(resp?.error ? resp.error : "sign failed", 'error');
+                } else {
+                    window.close();
                 }
-            });
-            if (!resp) {
-                showToast(resp.error ? resp.error : "sign failed", 'error');
-            } else {
-                window.close();
+            }else{
+                showToast(signResp.error ? signResp.error : "sign failed", 'error');
             }
+
+
         }
     };
 
@@ -216,14 +221,26 @@ export const SignTransactionRequestView: React.FC<ApprovalViewRequestProps> = ({
                         payload: {
                             success: r.data.success,
                             balanceChange: r2,
-                            esGasFee: r.data.esGasFee
+                            esGasFee: r.data.esGasFee,
+                            error: "",
                         }
                     });
+                }).finally(()=>{
+                    dispatch({ type: SignTransactionActionType.SET_ES_LOADING, payload: false });
                 });
+            }else{
+                dispatch({
+                    type: SignTransactionActionType.SET_ES_TX,
+                    payload: {
+                        success: false,
+                        balanceChange: null,
+                        esGasFee: "0",
+                        error: r.errMsg
+                    }
+                });
+                dispatch({ type: SignTransactionActionType.SET_ES_LOADING, payload: false });
             }
-        }).finally(() => {
-            dispatch({ type: SignTransactionActionType.SET_ES_LOADING, payload: false });
-        });
+        })
     }, []);
 
     const renderBalanceChanges = () => {
@@ -231,7 +248,7 @@ export const SignTransactionRequestView: React.FC<ApprovalViewRequestProps> = ({
             return <div className="text-sm text-slate-500 italic">Simulating transaction...</div>;
         }
         if (!state.esTx.success) {
-            return <div className="text-sm text-red-500">Simulation failed. Proceed with caution.</div>;
+            return <div className="text-sm text-red-500">Simulation failed.Error: {state.esTx.error}</div>;
         }
         if (!state.esTx.balanceChange || state.esTx.balanceChange.size === 0) {
             return <div className="text-sm text-slate-500">No balance changes detected.</div>;

@@ -337,7 +337,6 @@ export class EndlessService {
             signerPublicKey: publicKey,
             transaction: transaction,
         })
-
         if (simulateResp.length === 0) {
             return { status: RespType.Error, errMsg: "simulate resp is null" }
         }
@@ -622,8 +621,13 @@ export class EndlessService {
             const coinMap = new Map<GetCoinDataResponse, Decimal>();
             const entries = Array.from(bc.entries());
             await Promise.all(entries.map(async ([coin, amount]) => {
-                const coinInfo = await this.queryCoinInfo(coin, this.currentNetwork);
-                coinMap.set(coinInfo, amount);
+                try {
+                    const coinInfo = await this.queryCoinInfo(coin, this.currentNetwork);
+                    coinMap.set(coinInfo, amount);
+                }catch (e){
+                    console.error("query failed:",e)
+                }
+
             }));
             result.set(addr, coinMap);
         }

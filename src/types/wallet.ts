@@ -86,13 +86,6 @@ export interface ApprovalViewRequestProps {
     activeAccount: LocalPubAccount;
 }
 
-export interface SignAndSubmitRequestProps{
-    network: NetworkConfig;
-    psocr: PendingSignOrConfirmRequest;
-    activeAccount: LocalPubAccount;
-    onSuccess: (hash: string) => void;
-}
-
 export interface EstimateTransaction {
     success: boolean;
     balanceChange: Map<string, Map<string, Decimal>>;
@@ -103,6 +96,7 @@ export interface EstimateTransactionEx {
     success: boolean;
     balanceChange: Map<string, Map<GetCoinDataResponse, Decimal>>;
     esGasFee: string;
+    error: string| null;
 }
 
 

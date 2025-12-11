@@ -25,7 +25,7 @@ export type SignTransactionAction =
 
 export const signTransactionInitialState: SignTransactionState = {
     formatPayload: { isParsed: false },
-    esTx: { success: false, balanceChange: null, esGasFee: "0" },
+    esTx: { success: false, balanceChange: null, esGasFee: "0",error: null},
     esLoading: true,
 };
 
