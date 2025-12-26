@@ -39,7 +39,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 event: message.event,
                 data: message.data
             }
-        }, '*')
+        }, "*")
     }
     // Always return true for async response
     return true
@@ -61,7 +61,7 @@ window.addEventListener('message', async (event) => {
                 id: request.id,
                 result: response
             }
-        }, '*')
+        }, window.location.origin)
     } catch (error) {
         window.postMessage({
             type: MESSAGE_TYPE_ENDLESS_WALLET_RESPONSE,
@@ -69,7 +69,7 @@ window.addEventListener('message', async (event) => {
                 id: request.id,
                 error: error instanceof Error ? error.message : 'Unknown error'
             }
-        }, '*')
+        }, window.location.origin)
     }
 })
 

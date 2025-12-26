@@ -277,7 +277,7 @@ export const CollectionsView: React.FC<{
                 dispatch({ type: CollectionsActionType.SET_TOTAL_PAGE, payload: r.total <= COLLECTION_PAGE_SIZE ? 1 : Math.ceil(r.total / COLLECTION_PAGE_SIZE) });
             }
         }).catch(e => {
-            console.log(e);
+            console.error(e);
         }).finally(() => {
             dispatch({ type: CollectionsActionType.SET_LOADING, payload: false });
         });
